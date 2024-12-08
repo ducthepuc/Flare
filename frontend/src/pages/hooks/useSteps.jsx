@@ -12,7 +12,7 @@ export function useSteps() {
             answers: [],
             ...(type === 'code-task' && {
                 task: '',
-                highlightedElements: [],
+                help: '',
                 exampleCode: '',
                 acceptedAnswers: [{code: ''}],
             }),

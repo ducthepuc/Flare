@@ -1,18 +1,17 @@
 import React from 'react';
 import { AcceptedAnswers } from './AcceptedAnswers.jsx';
-import { HighlightedElements } from './HighlightedElements.jsx';
-import {motion} from 'framer-motion';
+import { ExampleCode } from './ExampleCode.jsx';
+import { HelpBlock } from './HelpBlock.jsx';
+import { motion } from 'framer-motion';
 
 export function CodeTask({
-                             step,
-                             stepIndex,
-                             handleStepChange,
-                             handleHighlightedElementChange,
-                             removeHighlightedElement,
-                             addAcceptedAnswer,
-                             removeAcceptedAnswer,
-                             handleAcceptedAnswerChange,
-                         }) {
+    step,
+    stepIndex,
+    handleStepChange,
+    addAcceptedAnswer,
+    removeAcceptedAnswer,
+    handleAcceptedAnswerChange,
+}) {
     return (
         <div>
             <h3>Coding Task</h3>
@@ -43,11 +42,14 @@ export function CodeTask({
                 }}
             />
 
-            <HighlightedElements
-                elements={step.highlightedElements || []}
-                onAdd={() => handleHighlightedElementChange(stepIndex, (step.highlightedElements || []).length, '')}
-                onRemove={(elementIndex) => removeHighlightedElement(stepIndex, elementIndex)}
-                onChange={(elementIndex, value) => handleHighlightedElementChange(stepIndex, elementIndex, value)}
+            <HelpBlock
+                help={step.help}
+                onChange={(value) => handleStepChange(stepIndex, 'help', value)}
+            />
+
+            <ExampleCode
+                code={step.exampleCode}
+                onChange={(value) => handleStepChange(stepIndex, 'exampleCode', value)}
             />
 
             <AcceptedAnswers

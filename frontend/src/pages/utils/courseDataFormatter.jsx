@@ -25,7 +25,7 @@ export function formatCourseData(title, description, steps) {
                 return {
                     type: 'code-task',
                     task: step.task,
-                    highlightedElements: step.highlightedElements || [],
+                    help: step.help,
                     exampleCode: step.exampleCode,
                     acceptedAnswers: step.acceptedAnswers.map(answer => answer.code),
                 };

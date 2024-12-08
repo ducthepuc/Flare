@@ -1,46 +1,36 @@
 import React from 'react';
-import {motion} from 'framer-motion';
+import Editor from "@monaco-editor/react";
 
 export function AcceptedAnswers({
-                                    answers,
-                                    onAdd,
-                                    onRemove,
-                                    onChange
-                                }) {
+    answers,
+    onAdd,
+    onRemove,
+    onChange
+}) {
     return (
         <div>
             <h4>Accepted Answers</h4>
             {answers.map((answer, answerIndex) => (
                 <div key={answerIndex} className="flex items-center mb-2">
-          <motion.textarea
-              placeholder={`Accepted Answer ${answerIndex + 1}`}
-              value={answer.code}
-              onChange={(e) => onChange(answerIndex, e.target.value)}
-              style={{
-                  width: '50%',
-                  height: '250px',
-                  padding: '12px',
-                  marginBottom: '16px',
-                  border: '1px solid #444',
-                  borderRadius: '8px',
-                  backgroundColor: '#333333',
-                  color: 'white',
-                  outline: 'none',
-                  resize: 'none',
-                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                  fontSize: '16px',
-              }}
-              whileHover={{
-                  backgroundColor: '#444444',
-              }}
-              whileFocus={{
-                  backgroundColor: '#555555',
-                  border: '1px solid #FF7F4F',
-              }}
-          />
+                    <div style={{ width: '100%' }}>
+                        <Editor
+                            defaultLanguage="python"
+                            width="100%"
+                            height="250px"
+                            onChange={(value) => onChange(answerIndex, value)}
+                            options={{
+                                minimap: { enabled: false },
+                                scrollBeyondLastLine: false,
+                                automaticLayout: true,
+                                contextmenu: true
+                            }}
+                            value={answer.code}
+                            theme="vs-dark"
+                        />
+                    </div>
                     <button
                         onClick={() => onRemove(answerIndex)}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 ml-2"
                     >
                         X
                     </button>
