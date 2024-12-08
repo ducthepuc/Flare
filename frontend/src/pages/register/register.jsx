@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 function RegisterPage() {
@@ -7,8 +7,11 @@ function RegisterPage() {
     name: '',
     email: '',
     password: '',
-    confirm_password: ''
+    confirm_password: '',
+    role: 'learner'
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -19,15 +22,23 @@ function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch('http://localhost:5000/api/user_make:def', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    });
-    const data = await response.json();
-    console.log(data);
+    try {
+      const response = await fetch('http://localhost:5000/api/user_make:def', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        navigate('/login');
+      } else {
+        console.error(data.error);
+      }
+    } catch (error) {
+      console.error('Registration failed:', error);
+    }
   };
 
   return (
@@ -122,6 +133,17 @@ function RegisterPage() {
             placeholder="Repeat /:"
           />
           <br/>
+          <div className="mb-4">
+            <label className="block mb-2">I want to:</label>
+            <select
+              value={formData.role}
+              onChange={(e) => setFormData({...formData, role: e.target.value})}
+              className="w-full p-2 bg-gray-700 rounded"
+            >
+              <option value="learner">Learn from courses</option>
+              <option value="contributor">Create and contribute courses</option>
+            </select>
+          </div>
           <motion.button
             type="submit"
             style={{

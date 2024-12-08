@@ -17,6 +17,7 @@ function Viewer() {
   const [editorHeight, setEditorHeight] = useState(300);
   const [codeTaskAnswers, setCodeTaskAnswers] = useState({});
   const [codeTaskResults, setCodeTaskResults] = useState({});
+  const [userProgress, setUserProgress] = useState(null);
 
   useEffect(() => {
     const fetchCourseData = async () => {
@@ -44,6 +45,27 @@ function Viewer() {
     };
 
     fetchCourseData();
+  }, [courseTitle]);
+
+  useEffect(() => {
+    const fetchProgress = async () => {
+      try {
+        const response = await fetch(`/api/course-progress/${courseTitle}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setCurrentIndex(data.current_step);
+          setUserProgress(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch progress:', error);
+      }
+    };
+
+    fetchProgress();
   }, [courseTitle]);
 
   const handleAnswerSelect = (questionIndex, answerIndex) => {
@@ -125,6 +147,28 @@ function Viewer() {
       setCurrentIndex(currentIndex - 1);
     }
   };
+
+  const saveProgress = async () => {
+    try {
+      await fetch(`/api/course-progress/${courseTitle}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          current_step: currentIndex,
+          completed: currentIndex === courseData.elements.length - 1
+        })
+      });
+    } catch (error) {
+      console.error('Failed to save progress:', error);
+    }
+  };
+
+  useEffect(() => {
+    saveProgress();
+  }, [currentIndex]);
 
   const renderElement = (element, index) => {
     if (!element) return null;

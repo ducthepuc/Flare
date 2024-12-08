@@ -56,20 +56,98 @@ def get_course_names():
 
 @file_bp.route('/api/courses/<courseTitle>', methods=['GET'])
 def get_course(courseTitle):
-    # course_data = None
-    if ["..", "."] in courseTitle:
-        return {"message": "FUCK YOU"}
-    return send_from_directory('../cdn/courses', courseTitle + ".json")
-    # for course in os.listdir(COURSE_DIRECTORY):
-    #     if course.split(".")[0] == courseTitle:
-            # course_file_path = os.path.join(COURSE_DIRECTORY, course)
-            # with open(course_file_path, 'r') as file:
-            #     try:
-            #         course_data = json.load(file)
-            #     except json.JSONDecodeError:
-            #         return jsonify({"error": f"Failed to parse {courseTitle} course data"}), 500
-    
-    # if course_data:
-    #     return jsonify(course_data)
-    # else:
-    #     return jsonify({"error": "Course not found"}), 404
+    try:
+        if ".." in courseTitle or "." in courseTitle:
+            return jsonify({"error": "Invalid course title"}), 400
+            
+        file_path = os.path.join(COURSE_DIRECTORY, f"{courseTitle}.json")
+        if not os.path.exists(file_path):
+            return jsonify({"error": "Course not found"}), 404
+            
+        with open(file_path, 'r') as file:
+            course_data = json.load(file)
+            return jsonify(course_data), 200
+            
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@file_bp.route('/api/course-progress/<course_title>', methods=['GET'])
+def get_progress(course_title):
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if not token:
+        return jsonify({"error": "No token provided"}), 401
+        
+    try:
+        user_id = get_user_by_token(token)[0]
+        cursor.execute(
+            "SELECT current_step, completed FROM course_progress WHERE user_id = %s AND course_title = %s",
+            (user_id, course_title)
+        )
+        result = cursor.fetchone()
+        
+        if result:
+            return jsonify({
+                "current_step": result[0],
+                "completed": bool(result[1])
+            })
+        return jsonify({"current_step": 0, "completed": False})
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@file_bp.route('/api/course-progress/<course_title>', methods=['POST'])
+def save_progress(course_title):
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if not token:
+        return jsonify({"error": "No token provided"}), 401
+        
+    try:
+        data = request.json
+        user_id = get_user_by_token(token)[0]
+        
+        cursor.execute(
+            """INSERT INTO course_progress (user_id, course_title, current_step, completed, last_accessed) 
+               VALUES (%s, %s, %s, %s, NOW())
+               ON DUPLICATE KEY UPDATE 
+               current_step = VALUES(current_step),
+               completed = VALUES(completed),
+               last_accessed = NOW()""",
+            (user_id, course_title, data['current_step'], data['completed'])
+        )
+        sql.commit()
+        return jsonify({"message": "Progress saved successfully"})
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@file_bp.route('/api/in-progress-courses', methods=['GET'])
+def get_in_progress_courses():
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if not token:
+        return jsonify({"error": "No token provided"}), 401
+        
+    try:
+        user_id = get_user_by_token(token)[0]
+        cursor.execute("""
+            SELECT cp.course_title, cp.current_step, 
+                   (SELECT COUNT(*) FROM json_table(
+                       (SELECT course_data FROM courses WHERE title = cp.course_title),
+                       '$.elements[*]' COLUMNS (type VARCHAR(50) PATH '$.type')
+                   ) as elements) as total_steps
+            FROM course_progress cp
+            WHERE cp.user_id = %s AND cp.completed = FALSE
+            ORDER BY cp.last_accessed DESC
+        """, (user_id,))
+        
+        courses = []
+        for row in cursor.fetchall():
+            courses.append({
+                "title": row[0],
+                "current_step": row[1],
+                "total_steps": row[2]
+            })
+            
+        return jsonify({"courses": courses})
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

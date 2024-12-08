@@ -83,13 +83,49 @@ CREATE TABLE `user` (
   `joined` datetime NOT NULL,
   `isAccountValid` binary(1) NOT NULL,
   `role` enum('basic','pro','enterprise','admin') NOT NULL,
+  `role_id` int NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
   UNIQUE KEY `token_UNIQUE` (`token`),
   UNIQUE KEY `registration_id_UNIQUE` (`registration_id`),
   UNIQUE KEY `profile_id_UNIQUE` (`profile_id`),
-  UNIQUE KEY `username_UNIQUE` (`username`)
+  UNIQUE KEY `username_UNIQUE` (`username`),
+  FOREIGN KEY (`role_id`) REFERENCES `user_role`(`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user_role`
+--
+
+DROP TABLE IF EXISTS `user_role`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_role` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `course_progress`
+--
+
+DROP TABLE IF EXISTS `course_progress`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `course_progress` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `course_title` varchar(255) NOT NULL,
+  `current_step` int NOT NULL DEFAULT 0,
+  `completed` boolean NOT NULL DEFAULT false,
+  `last_accessed` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `user`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

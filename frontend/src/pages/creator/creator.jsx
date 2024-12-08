@@ -107,6 +107,7 @@ function CourseCreator() {
                     const result = await response.json();
                     console.log('Course saved successfully:', result);
                     alert('Course saved successfully!');
+                    navigate('/homepage');
                 } else {
                     const error = await response.json();
                     console.error('Failed to save course:', error);

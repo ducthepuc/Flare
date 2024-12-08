@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import DefaultPfp from '../assets/default_pfp.jpg';
 import { Input } from 'reactstrap';
 
@@ -61,6 +61,11 @@ const HomePage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [courses, setCourses] = useState([]);
     const [profilePicture, setPfp] = useState(DefaultPfp);
+    const [showProfilePopup, setShowProfilePopup] = useState(false);
+    const [userRole, setUserRole] = useState(null);
+    const [inProgressCourses, setInProgressCourses] = useState([]);
+    const [bio, setBio] = useState('');
+    const [isEditing, setIsEditing] = useState(false);
 
     const logout = () => {
         localStorage.removeItem("userToken");
@@ -100,8 +105,40 @@ const HomePage = () => {
     }, [searchInput, courses]);
 
     useEffect(() => {
-        fetchUsername(navigate, setUsername, setIsLoading, setPfp);
-    }, [navigate]);
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/me', {
+                    headers: {
+                        'Authorization': localStorage.getItem('userToken')
+                    }
+                });
+                const data = await response.json();
+                setUsername(data.username);
+                setPfp(data.profilePicture);
+                setBio(data.bio || '');
+                setUserRole(data.role);
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+
+        const fetchInProgressCourses = async () => {
+            try {
+                const response = await fetch('/api/in-progress-courses', {
+                    headers: {
+                        'Authorization': localStorage.getItem('userToken')
+                    }
+                });
+                const data = await response.json();
+                setInProgressCourses(data.courses);
+            } catch (error) {
+                console.error('Error fetching in-progress courses:', error);
+            }
+        };
+
+        fetchUserData();
+        fetchInProgressCourses();
+    }, []);
 
     const handleSearch = (e) => {
         setSearchInput(e.target.value);
@@ -111,63 +148,129 @@ const HomePage = () => {
         navigate(`/viewer/${courseTitle}`);
     };
 
-    return (
-        <div style={{ padding: '20px' }}>
-            {/* Header Section */}
-            <header style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <div>
-                    <h3>Welcome, {username || 'Guest'}</h3>
-                    <div>
-                        <img
-                            src={profilePicture}
-                            alt="Profile" 
-                            style={{ width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer' }}
-                            onClick={() => navigate('/panel')}
-                        />
-                        <br />
-                        <button 
-                            onClick={logout} 
-                            style={{ marginLeft: '10px', padding: '5px 10px', cursor: 'pointer' }}
-                        >
-                            Logout
-                        </button>
-                    </div>
-                </div>
-            </header>
+    const ProfilePopup = () => (
+        <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="absolute right-0 top-16 bg-gray-800 rounded-lg shadow-lg p-4 w-80"
+            style={{ zIndex: 1000 }}
+        >
+            <div className="text-center">
+                <img
+                    src={profilePicture}
+                    alt="Profile"
+                    className="w-20 h-20 rounded-full mx-auto mb-4"
+                />
+                <h3 className="text-xl mb-2">{username}</h3>
+                {isEditing ? (
+                    <textarea
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
+                        className="w-full bg-gray-700 rounded p-2 mb-2"
+                    />
+                ) : (
+                    <p className="text-gray-400 mb-4">{bio || 'No bio set'}</p>
+                )}
+                <button
+                    onClick={() => isEditing ? handleBioUpdate() : setIsEditing(true)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
+                >
+                    {isEditing ? 'Save' : 'Edit Bio'}
+                </button>
+                <button
+                    onClick={logout}
+                    className="bg-red-500 text-white px-4 py-2 rounded"
+                >
+                    Logout
+                </button>
+            </div>
+        </motion.div>
+    );
 
-            {/* Centered Search Bar */}
-            <div style={{ margin: '20px 0' }}>
+    return (
+        <div className="p-5">
+            {/* Header */}
+            <div className="flex justify-between items-center mb-8">
+                <h3 className="text-xl">Welcome, {username}</h3>
+                <div className="relative">
+                    <img
+                        src={profilePicture}
+                        alt="Profile"
+                        className="w-10 h-10 rounded-full cursor-pointer"
+                        onClick={() => setShowProfilePopup(!showProfilePopup)}
+                    />
+                    <AnimatePresence>
+                        {showProfilePopup && <ProfilePopup />}
+                    </AnimatePresence>
+                </div>
+            </div>
+
+            {/* Search Bar */}
+            <div className="mb-8">
                 <motion.input
-                    type="text" 
+                    type="text"
                     placeholder="Search courses..."
-                    value={searchInput} 
+                    value={searchInput}
                     onChange={handleSearch}
-                    style={{ color: 'rgb(240, 240, 240)', backgroundColor: '#333333',padding: '10px', width: '100%', maxWidth: '600px', margin: '0 auto', display: 'block', border: '1px solid #555' }}
-                    whileHover={{ scale: 1.05, border: '1px solid #FF7F4F' }}
+                    className="w-full max-w-2xl mx-auto block p-2 bg-gray-700 rounded"
                 />
             </div>
 
-            {/* Action Button */}
-            <div style={{ margin: '20px 0' }}>
-                <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => navigate('/creator')}
-                    style={{ padding: '10px 20px', cursor: 'pointer' }}
-                >
-                    Create Course
-                </motion.button>
-            </div>
+            {/* Create Course Button - only show for contributors */}
+            {userRole === 'contributor' && (
+                <div className="mb-8">
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => navigate('/creator')}
+                        className="px-4 py-2 bg-blue-500 text-white rounded"
+                    >
+                        Create Course
+                    </motion.button>
+                </div>
+            )}
 
-            {/* Course Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
-                {filteredCards.map((card) => (
-                    <Card key={card.id} onClick={() => handleCourseClick(card.title)}>
-                        <div style={{ padding: '10px' }}>
-                            <h4 style={{ color: 'black' }}>{card.title}</h4>
-                        </div>
-                    </Card>
-                ))}
+            {/* In Progress Courses */}
+            {inProgressCourses.length > 0 && (
+                <div className="mb-8">
+                    <h2 className="text-xl mb-4">Continue Learning</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {inProgressCourses.map(course => (
+                            <Card
+                                key={course.title}
+                                onClick={() => handleCourseClick(course.title)}
+                            >
+                                <div className="p-4">
+                                    <h4>{course.title}</h4>
+                                    <div className="mt-2 bg-gray-700 rounded-full h-2">
+                                        <div
+                                            className="bg-blue-500 h-full rounded-full"
+                                            style={{ width: `${(course.current_step / course.total_steps) * 100}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* All Courses */}
+            <div>
+                <h2 className="text-xl mb-4">All Courses</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {filteredCards.map(card => (
+                        <Card
+                            key={card.id}
+                            onClick={() => handleCourseClick(card.title)}
+                        >
+                            <div className="p-4">
+                                <h4>{card.title}</h4>
+                            </div>
+                        </Card>
+                    ))}
+                </div>
             </div>
         </div>
     );
