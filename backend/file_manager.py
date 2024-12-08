@@ -1,6 +1,7 @@
 import os
 import json
 from flask import request, jsonify, Blueprint, send_from_directory
+from dbmanager import cursor, sql, get_user_by_token
 
 file_bp = Blueprint("file_manager", __name__)
 
@@ -123,7 +124,7 @@ def save_progress(course_title):
 
 @file_bp.route('/api/in-progress-courses', methods=['GET'])
 def get_in_progress_courses():
-    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    token = request.headers.get('Authorization')
     if not token:
         return jsonify({"error": "No token provided"}), 401
         
@@ -131,10 +132,7 @@ def get_in_progress_courses():
         user_id = get_user_by_token(token)[0]
         cursor.execute("""
             SELECT cp.course_title, cp.current_step, 
-                   (SELECT COUNT(*) FROM json_table(
-                       (SELECT course_data FROM courses WHERE title = cp.course_title),
-                       '$.elements[*]' COLUMNS (type VARCHAR(50) PATH '$.type')
-                   ) as elements) as total_steps
+                   (SELECT COUNT(*) FROM course_progress WHERE user_id = cp.user_id) as total_steps
             FROM course_progress cp
             WHERE cp.user_id = %s AND cp.completed = FALSE
             ORDER BY cp.last_accessed DESC
@@ -151,4 +149,5 @@ def get_in_progress_courses():
         return jsonify({"courses": courses})
         
     except Exception as e:
+        print(f"Error fetching in-progress courses: {str(e)}")
         return jsonify({"error": str(e)}), 500

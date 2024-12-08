@@ -107,27 +107,37 @@ const HomePage = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
+                const token = localStorage.getItem('userToken');
+                if (!token) {
+                    navigate('/login');
+                    return;
+                }
+
                 const response = await fetch('http://localhost:5000/api/me', {
+                    method: 'GET',
                     headers: {
-                        'Authorization': localStorage.getItem('userToken'),
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    credentials: 'include'
+                        'Accept': 'application/json',
+                        'Authorization': token
+                    }
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
+                if (data.result === false) {
+                    throw new Error(data.reason);
+                }
+
                 setUsername(data.username);
                 setPfp(data.profilePicture);
                 setBio(data.bio || '');
                 setUserRole(data.role);
             } catch (error) {
                 console.error('Error fetching user data:', error);
-                if (error.message.includes('401')) {
+                if (error.message.includes('401') || error.message.includes('token')) {
                     navigate('/login');
                 }
             }
@@ -135,15 +145,26 @@ const HomePage = () => {
 
         const fetchInProgressCourses = async () => {
             try {
-                const response = await fetch('/api/in-progress-courses', {
+                const token = localStorage.getItem('userToken');
+                if (!token) return;
+
+                const response = await fetch('http://localhost:5000/api/in-progress-courses', {
+                    method: 'GET',
                     headers: {
-                        'Authorization': localStorage.getItem('userToken')
+                        'Content-Type': 'application/json',
+                        'Authorization': token
                     }
                 });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const data = await response.json();
-                setInProgressCourses(data.courses);
+                setInProgressCourses(data.courses || []);
             } catch (error) {
                 console.error('Error fetching in-progress courses:', error);
+                setInProgressCourses([]);
             }
         };
 

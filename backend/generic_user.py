@@ -1,4 +1,4 @@
-from flask import Blueprint, request, send_from_directory, abort
+from flask import Blueprint, request, send_from_directory, abort, jsonify
 import dbmanager as dbm
 from dbmanager import cursor
 
@@ -37,37 +37,34 @@ def change_user():
 def get_me():
     auth = request.headers.get("Authorization")
 
-    if auth is None:
-        return {
-            "result": False,
-            "reason": "Please provide a valid user key"
-        }
+    if not auth:
+        return jsonify({"result": False, "reason": "Please provide a valid user key"}), 401
     
-    usr = dbm.get_user_by_token(auth)
-    if not usr:
-        return {
-            "result": False,
-            "reason": "User not found"
-        }
-    profile_id = usr[2]
-    profile = dbm.get_profile(profile_id)
+    try:
+        usr = dbm.get_user_by_token(auth)
+        if not usr:
+            return jsonify({"result": False, "reason": "User not found"}), 404
 
-    cursor.execute("SELECT name FROM user_role WHERE id = %s", (usr[9],))  # role_id is at index 9
-    role = cursor.fetchone()[0]
+        profile_id = usr[2]
+        profile = dbm.get_profile(profile_id)
 
-    if not profile:
-        return {
-            "result": False,
-            "reason": "Invalid profile id"
-        } 
+        cursor.execute("SELECT name FROM user_role WHERE id = %s", (usr[9],))
+        role = cursor.fetchone()[0]
 
-    return {
-        "username": profile[1],
-        "bio": profile[2],
-        "streak": profile[3],
-        "role": role,
-        "profilePicture": f"http://localhost:5000/cdn/pfp/{usr[0]}"
-    }
+        if not profile:
+            return jsonify({"result": False, "reason": "Invalid profile id"}), 404
+
+        return jsonify({
+            "result": True,
+            "username": profile[1],
+            "bio": profile[2],
+            "streak": profile[3],
+            "role": role,
+            "profilePicture": f"http://localhost:5000/cdn/pfp/{usr[0]}"
+        })
+    except Exception as e:
+        print(f"Error in get_me: {str(e)}")  # Add logging
+        return jsonify({"result": False, "reason": str(e)}), 500
 
 @user_bp.route('/api/change_pfp', methods=['POST'])
 def change_pfp():
