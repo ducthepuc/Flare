@@ -37,7 +37,7 @@ class DCData:
         ...
 
 
-def add_user(name: str, password, pw2, user_email, is_discord, discord_data: DCData):
+def add_user(name: str, password, pw2, user_email, is_discord, discord_data: DCData, role='learner'):
     if password != pw2:
         raise ValueError("Passwords do not match")
 
@@ -46,20 +46,18 @@ def add_user(name: str, password, pw2, user_email, is_discord, discord_data: DCD
 
     profile_id = cursor.lastrowid
 
-    if is_discord:
-        # cursor.execute("INSERT INTO")
-        registration_id = 0
-        ...
-    else:
-        cursor.execute("INSERT INTO classical_registration (email, password) VALUES (%s, %s)",
-                       params=(user_email, sha256(password.encode('utf-8')).hexdigest()))
-        registration_id = cursor.lastrowid
+    cursor.execute("SELECT id FROM user_role WHERE name = %s", (role,))
+    role_id = cursor.fetchone()[0]
+
+    cursor.execute("INSERT INTO classical_registration (email, password) VALUES (%s, %s)",
+                   params=(user_email, sha256(password.encode('utf-8')).hexdigest()))
+    registration_id = cursor.lastrowid
 
     token = generate_token()
     cursor.execute(
-        "INSERT INTO user (isDiscord, profile_id, registration_id, token, username, joined, isAccountValid) VALUES "
-        "(%s,%s,%s,%s,%s,%s,%s)", params=(is_discord, profile_id, registration_id, token,
-                                          name.lower(), datetime.now(), True))
+        "INSERT INTO user (isDiscord, profile_id, registration_id, token, username, joined, isAccountValid, role_id) VALUES "
+        "(%s,%s,%s,%s,%s,%s,%s,%s)", params=(is_discord, profile_id, registration_id, token,
+                                          name.lower(), datetime.now(), True, role_id))
 
     sql.commit()
 

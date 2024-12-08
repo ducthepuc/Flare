@@ -25,10 +25,10 @@ def user_registry():
     email = request_data.get('email')
     pwd = request_data.get('password')
     pwd2 = request_data.get('confirm_password')
+    role = request_data.get('role', 'learner')  # default to learner if not specified
 
     try:
-        dbm.add_user(uname, pwd, pwd2, email, False, None)
-
+        dbm.add_user(uname, pwd, pwd2, email, False, None, role)
         return jsonify({"result": True, "reason": "All info is right!"})
     except Exception as e:
         return jsonify({"result": False, "reason": str(e)})

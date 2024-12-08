@@ -51,6 +51,9 @@ def get_me():
     profile_id = usr[2]
     profile = dbm.get_profile(profile_id)
 
+    cursor.execute("SELECT name FROM user_role WHERE id = %s", (usr[9],))  # role_id is at index 9
+    role = cursor.fetchone()[0]
+
     if not profile:
         return {
             "result": False,
@@ -61,6 +64,7 @@ def get_me():
         "username": profile[1],
         "bio": profile[2],
         "streak": profile[3],
+        "role": role,
         "profilePicture": f"http://localhost:5000/cdn/pfp/{usr[0]}"
     }
 
