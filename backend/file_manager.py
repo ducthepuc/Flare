@@ -75,12 +75,15 @@ def get_course(courseTitle):
 
 @file_bp.route('/api/course-progress/<course_title>', methods=['GET'])
 def get_progress(course_title):
-    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    token = request.headers.get('Authorization')
     if not token:
         return jsonify({"error": "No token provided"}), 401
         
     try:
         user_id = get_user_by_token(token)[0]
+        if not user_id:
+            return jsonify({"error": "Invalid token"}), 401
+
         cursor.execute(
             "SELECT current_step, completed FROM course_progress WHERE user_id = %s AND course_title = %s",
             (user_id, course_title)
@@ -95,17 +98,23 @@ def get_progress(course_title):
         return jsonify({"current_step": 0, "completed": False})
         
     except Exception as e:
+        print(f"Error in get_progress: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @file_bp.route('/api/course-progress/<course_title>', methods=['POST'])
 def save_progress(course_title):
-    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    token = request.headers.get('Authorization')
     if not token:
         return jsonify({"error": "No token provided"}), 401
         
     try:
         data = request.json
+        if not data or 'current_step' not in data:
+            return jsonify({"error": "Missing required data"}), 400
+
         user_id = get_user_by_token(token)[0]
+        if not user_id:
+            return jsonify({"error": "Invalid token"}), 401
         
         cursor.execute(
             """INSERT INTO course_progress (user_id, course_title, current_step, completed, last_accessed) 
@@ -114,12 +123,13 @@ def save_progress(course_title):
                current_step = VALUES(current_step),
                completed = VALUES(completed),
                last_accessed = NOW()""",
-            (user_id, course_title, data['current_step'], data['completed'])
+            (user_id, course_title, data['current_step'], data.get('completed', False))
         )
         sql.commit()
         return jsonify({"message": "Progress saved successfully"})
         
     except Exception as e:
+        print(f"Error in save_progress: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @file_bp.route('/api/in-progress-courses', methods=['GET'])

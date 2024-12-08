@@ -47,7 +47,10 @@ def add_user(name: str, password, pw2, user_email, is_discord, discord_data: DCD
     profile_id = cursor.lastrowid
 
     cursor.execute("SELECT id FROM user_role WHERE name = %s", (role,))
-    role_id = cursor.fetchone()[0]
+    role_id_result = cursor.fetchone()
+    if not role_id_result:
+        raise ValueError(f"Invalid role: {role}")
+    role_id = role_id_result[0]
 
     cursor.execute("INSERT INTO classical_registration (email, password) VALUES (%s, %s)",
                    params=(user_email, sha256(password.encode('utf-8')).hexdigest()))
@@ -91,9 +94,15 @@ def login_user_via_auth(email, password):
 
 
 def get_user_by_token(token):
-    cursor.execute("SELECT * FROM user WHERE token = %s", (token,))
-    row = cursor.fetchone()
-    return row[0], row[5], row[2]
+    try:
+        cursor.execute("SELECT * FROM user WHERE token = %s", (token,))
+        row = cursor.fetchone()
+        if not row:
+            return None
+        return row
+    except Exception as e:
+        print(f"Error in get_user_by_token: {str(e)}")
+        return None
 
 
 def get_profile(profile_id):

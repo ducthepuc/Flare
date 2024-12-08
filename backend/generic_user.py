@@ -1,6 +1,7 @@
 from flask import Blueprint, request, send_from_directory, abort, jsonify
 import dbmanager as dbm
 from dbmanager import cursor
+import os
 
 user_bp = Blueprint('generic_user', __name__)
 
@@ -23,15 +24,24 @@ def get_pfp(uid):
 @user_bp.route('/api/v1/configure', methods=["PUT"])
 def change_user():
     auth = request.headers.get("Authorization")
-    changes = request.json
+    if not auth:
+        return jsonify({"result": False, "reason": "Please provide a valid user key"}), 401
 
-    for change, value in changes.items():
-        if change == "username":
-            dbm.change_display_name(auth, value)
-        elif change == "bio":
-            dbm.change_bio(auth, value)
+    try:
+        changes = request.json
+        if not changes:
+            return jsonify({"result": False, "reason": "No changes provided"}), 400
 
-    return {"response": True}
+        for change, value in changes.items():
+            if change == "username":
+                dbm.change_display_name(auth, value)
+            elif change == "bio":
+                dbm.change_bio(auth, value)
+
+        return jsonify({"result": True, "message": "Changes saved successfully"})
+    except Exception as e:
+        print(f"Error updating user configuration: {str(e)}")
+        return jsonify({"result": False, "reason": str(e)}), 500
 
 @user_bp.route('/api/me')
 def get_me():
@@ -69,25 +79,33 @@ def get_me():
 @user_bp.route('/api/change_pfp', methods=['POST'])
 def change_pfp():
     auth = request.headers.get("Authorization")
-
-    if auth is None:
-        return {
-            "result": False,
-            "reason": "Please provide a valid user key"
-        }
+    if not auth:
+        return jsonify({"result": False, "reason": "Please provide a valid user key"}), 401
     
-    usr = dbm.get_user_by_token(auth)
-    if not usr:
-        return {
-            "result": False,
-            "reason": "User not found"
-        }
-    
-    uid = usr[0]
-
-    file_stream = request.files.get('pfp')
-    file_stream.save(f'../cdn/images/{uid}.png')
-
-    return {
-        "result": True
-    }
+    try:
+        usr = dbm.get_user_by_token(auth)
+        if not usr:
+            return jsonify({"result": False, "reason": "User not found"}), 404
+        
+        uid = usr[0]
+        file = request.files.get('pfp')
+        
+        if not file:
+            return jsonify({"result": False, "reason": "No file provided"}), 400
+            
+        # Ensure the images directory exists
+        images_dir = os.path.join(os.path.dirname(__file__), '../cdn/images')
+        os.makedirs(images_dir, exist_ok=True)
+        
+        # Save the file
+        file_path = os.path.join(images_dir, f'{uid}.png')
+        file.save(file_path)
+        
+        return jsonify({
+            "result": True,
+            "message": "Profile picture updated successfully"
+        })
+        
+    except Exception as e:
+        print(f"Error updating profile picture: {str(e)}")
+        return jsonify({"result": False, "reason": str(e)}), 500

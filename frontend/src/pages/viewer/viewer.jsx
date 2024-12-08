@@ -149,26 +149,37 @@ function Viewer() {
   };
 
   const saveProgress = async () => {
+    // Don't try to save progress if courseData isn't loaded yet
+    if (!courseData || !courseData.elements) {
+        return;
+    }
+
     try {
-      await fetch(`/api/course-progress/${courseTitle}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          current_step: currentIndex,
-          completed: currentIndex === courseData.elements.length - 1
-        })
-      });
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        await fetch(`/api/course-progress/${courseTitle}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
+            body: JSON.stringify({
+                current_step: currentIndex,
+                completed: currentIndex === courseData.elements.length - 1
+            })
+        });
     } catch (error) {
-      console.error('Failed to save progress:', error);
+        console.error('Failed to save progress:', error);
     }
   };
 
+  // Only call saveProgress when courseData is available
   useEffect(() => {
-    saveProgress();
-  }, [currentIndex]);
+    if (courseData) {
+        saveProgress();
+    }
+  }, [currentIndex, courseData]);
 
   const renderElement = (element, index) => {
     if (!element) return null;
