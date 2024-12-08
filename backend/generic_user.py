@@ -1,5 +1,6 @@
 from flask import Blueprint, request, send_from_directory, abort
 import dbmanager as dbm
+from dbmanager import cursor
 
 user_bp = Blueprint('generic_user', __name__)
 

@@ -109,9 +109,17 @@ const HomePage = () => {
             try {
                 const response = await fetch('http://localhost:5000/api/me', {
                     headers: {
-                        'Authorization': localStorage.getItem('userToken')
-                    }
+                        'Authorization': localStorage.getItem('userToken'),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'include'
                 });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
                 setUsername(data.username);
                 setPfp(data.profilePicture);
@@ -119,6 +127,9 @@ const HomePage = () => {
                 setUserRole(data.role);
             } catch (error) {
                 console.error('Error fetching user data:', error);
+                if (error.message.includes('401')) {
+                    navigate('/login');
+                }
             }
         };
 
@@ -138,7 +149,7 @@ const HomePage = () => {
 
         fetchUserData();
         fetchInProgressCourses();
-    }, []);
+    }, [navigate]);
 
     const handleSearch = (e) => {
         setSearchInput(e.target.value);
@@ -232,7 +243,7 @@ const HomePage = () => {
             )}
 
             {/* In Progress Courses */}
-            {inProgressCourses.length > 0 && (
+            {inProgressCourses && inProgressCourses.length > 0 && (
                 <div className="mb-8">
                     <h2 className="text-xl mb-4">Continue Learning</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

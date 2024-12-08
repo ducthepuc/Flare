@@ -26,8 +26,8 @@ def is_port_in_use(port):
 app = f.Flask(__name__)
 CORS(app, 
      resources={r"/api/*": {
-         "origins": ORIGINS,
-         "methods": ["GET", "POST", "OPTIONS", "PUT"],
+         "origins": ["http://localhost:3000"],
+         "methods": ["GET", "POST", "PUT", "OPTIONS"],
          "allow_headers": ["Content-Type", "Authorization"]
      }},
      supports_credentials=True)

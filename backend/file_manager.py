@@ -60,15 +60,16 @@ def get_course(courseTitle):
         if ".." in courseTitle or "." in courseTitle:
             return jsonify({"error": "Invalid course title"}), 400
             
-        file_path = os.path.join(COURSE_DIRECTORY, f"{courseTitle}.json")
+        file_path = os.path.join(os.path.dirname(__file__), COURSE_DIRECTORY, f"{courseTitle}.json")
         if not os.path.exists(file_path):
             return jsonify({"error": "Course not found"}), 404
             
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding='utf-8') as file:
             course_data = json.load(file)
             return jsonify(course_data), 200
             
     except Exception as e:
+        print(f"Error loading course: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @file_bp.route('/api/course-progress/<course_title>', methods=['GET'])
