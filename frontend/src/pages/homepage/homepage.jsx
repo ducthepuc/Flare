@@ -105,19 +105,29 @@ const HomePage = () => {
 
     const getCourseNames = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/get_course_objects');
+
+            const response = await fetch('http://localhost:5000/api/get_course_objects', {
+                method: 'GET',
+                headers: {
+                    'Authorization': localStorage.getItem("userToken"),
+                    'Content-Type': 'application/json'
+                }
+            });
             if (response.ok) {
                 const data = await response.json();
                 if (data.response) {
                     const courseNamePairs = data.result;
-                    const courses = courseNamePairs.map(courseObj => ({
-                        id: courseObj[0],
-                        courseId: courseObj[0],
-                        title: courseObj[1],
-                        creator: courseObj[2] || 'Unknown',
-                        tags: courseObj[3] || []
-                    }));
-                    
+                    let index = 0;
+                    const courses = courseNamePairs.map(courseObj => {
+                        index += 1;
+                        return {
+                            id: index-1,
+                            courseId: courseObj.id,
+                            title: courseObj.title,
+                            creator: courseObj.creator || 'Unknown',
+                            tags: courseObj.tags || []
+                        };
+                    });
                     const coursesWithProgress = await Promise.all(courses.map(async (course) => {
                         const progress = await getCourseProgress(course.courseId);
                         return {
@@ -128,7 +138,7 @@ const HomePage = () => {
 
                     const started = coursesWithProgress.filter(course => course.progress > 0);
                     const notStarted = coursesWithProgress.filter(course => !course.progress);
-                    
+
                     setStartedCourses(started);
                     setCourses(notStarted);
                 } else {
@@ -164,7 +174,7 @@ const HomePage = () => {
     }, [courses]);
 
     useEffect(() => {
-        const filtered = topUsers.filter(user => 
+        const filtered = topUsers.filter(user =>
             user.username.toLowerCase().includes(searchInput.toLowerCase())
         );
         setFilteredUsers(filtered);
@@ -206,7 +216,7 @@ const HomePage = () => {
 
                 const started = coursesWithProgress.filter(course => course.progress > 0);
                 const notStarted = coursesWithProgress.filter(course => !course.progress);
-                
+
                 setStartedCourses(started);
                 setCourses(notStarted);
             }
@@ -284,13 +294,13 @@ const HomePage = () => {
                     <div>
                         <img
                             src={profilePicture}
-                            alt="Profile" 
+                            alt="Profile"
                             style={{ width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer' }}
                             onClick={() => navigate('/panel')}
                         />
                         <br />
-                        <button 
-                            onClick={logout} 
+                        <button
+                            onClick={logout}
                             style={{ marginLeft: '10px', padding: '5px 10px', cursor: 'pointer' }}
                         >
                             Logout
@@ -301,10 +311,10 @@ const HomePage = () => {
 
             <div style={{ margin: '20px 0' }}>
                 <h2 style={{ marginBottom: '15px' }}>Popular Categories</h2>
-                <div style={{ 
-                    display: 'flex', 
+                <div style={{
+                    display: 'flex',
                     flexWrap: 'wrap',
-                    gap: '10px', 
+                    gap: '10px',
                     justifyContent: 'center'
                 }}>
                     {popularTags.map((tag) => (
@@ -327,7 +337,7 @@ const HomePage = () => {
                             whileTap={{ scale: 0.95 }}
                         >
                             {tag.name}
-                            <span style={{ 
+                            <span style={{
                                 backgroundColor: 'rgba(0,0,0,0.1)',
                                 padding: '2px 8px',
                                 borderRadius: '10px',
@@ -342,10 +352,10 @@ const HomePage = () => {
 
             <div style={{ margin: '20px 0' }}>
                 <h2 style={{ marginBottom: '15px' }}>Top Course Creators</h2>
-                <div style={{ 
-                    display: 'flex', 
-                    overflowX: 'auto', 
-                    gap: '15px', 
+                <div style={{
+                    display: 'flex',
+                    overflowX: 'auto',
+                    gap: '15px',
                     padding: '10px 0'
                 }}>
                     {filteredUsers.map((user, index) => (
@@ -364,7 +374,7 @@ const HomePage = () => {
                             whileHover={{ scale: 1.05 }}
                             onClick={() => navigate(`/profile/${user.username}`)}
                         >
-                            <div style={{ 
+                            <div style={{
                                 backgroundColor: index < 3 ? ['#FFD700', '#C0C0C0', '#CD7F32'][index] : '#666',
                                 color: 'black',
                                 width: '24px',
@@ -379,16 +389,16 @@ const HomePage = () => {
                             }}>
                                 {index + 1}
                             </div>
-                            <span style={{ 
-                                color: 'black', 
+                            <span style={{
+                                color: 'black',
                                 fontWeight: 'bold',
                                 marginBottom: '5px',
                                 textAlign: 'center'
                             }}>
                                 {user.username}
                             </span>
-                            <div style={{ 
-                                display: 'flex', 
+                            <div style={{
+                                display: 'flex',
                                 alignItems: 'center',
                                 gap: '4px',
                                 color: '#333'
@@ -403,9 +413,9 @@ const HomePage = () => {
 
             <div style={{ margin: '20px 0' }}>
                 <motion.input
-                    type="text" 
+                    type="text"
                     placeholder="Search courses and users..."
-                    value={searchInput} 
+                    value={searchInput}
                     onChange={handleSearch}
                     style={{ color: 'rgb(240, 240, 240)', backgroundColor: '#333333',padding: '10px', width: '100%', maxWidth: '600px', margin: '0 auto', display: 'block', border: '1px solid #555' }}
                     whileHover={{ scale: 1.05, border: '1px solid #FF7F4F' }}
@@ -428,10 +438,10 @@ const HomePage = () => {
                     <h2 style={{ marginBottom: '20px' }}>Continue Learning</h2>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
                         {startedCourses.map((course) => (
-                            <Card 
-                                key={course.id} 
-                                card={[course.id, course.title, course.creator, course.tags]} 
-                                onClick={() => handleCourseClick(course.id)}
+                            <Card
+                                key={course.courseId}
+                                card={[course.courseId, course.title, course.creator, course.tags]}
+                                onClick={() => handleCourseClick(course.courseId)}
                             />
                         ))}
                     </div>
@@ -441,10 +451,10 @@ const HomePage = () => {
             <h2 style={{ marginBottom: '20px' }}>All Courses</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
                 {courses.map((course) => (
-                    <Card 
-                        key={course.id} 
-                        card={[course.id, course.title, course.creator, course.tags]} 
-                        onClick={() => handleCourseClick(course.id)}
+                    <Card
+                        key={course.courseId}
+                        card={[course.courseId, course.title, course.creator, course.tags]}
+                        onClick={() => handleCourseClick(course.courseId)}
                     />
                 ))}
             </div>

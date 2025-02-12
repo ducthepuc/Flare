@@ -15,7 +15,6 @@ function Login() {
     setLoading(true);
     setError('');
 
-    try {
       const response = await axios.post('http://localhost:5000/api/uauth:def', {
         email,
         password,
@@ -24,14 +23,18 @@ function Login() {
       if (response.data.result) {
         localStorage.setItem('userToken', response.data.data.token);
         history('/homepage');
+        console.log(response.data.reason)
       } else {
         setError(response.data.reason);
       }
-    } catch (err) {
-      setError('Something went wrong, please try again.');
-    } finally {
-      setLoading(false);
-    }
+  setLoading(false);
+//     try {
+//     } catch (err) {
+//
+//       setError('Something went wrong, please try again.');
+//     } finally {
+//       setLoading(false);
+//     }
   };
 
   return (

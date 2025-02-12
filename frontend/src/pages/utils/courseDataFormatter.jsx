@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 export const formatCourseData = (title, description, steps, tags) => {
-=======
-export const formatCourseData = (title, description, steps) => {
->>>>>>> 1311927426ed1e65952e143b703371fe5fe11e07
     return {
         title,
         description,

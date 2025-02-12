@@ -134,7 +134,7 @@ function CourseCreator() {
             }
 
             console.log("Token verified, proceeding with course save...");
-            const response = await fetch('http://localhost:5000/api/file_upload', {
+            const response = await fetch('http://localhost:5000/api/course/upload_course', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

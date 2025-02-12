@@ -35,9 +35,10 @@ function RegisterPage() {
       const data = await response.json();
       
       if (response.ok) {
+          console.log(data)
         navigate('/login');
       } else {
-        setError(data.error || 'Registration failed. Please try again.');
+        setError(data.reason || 'Registration failed. Please try again.');
       }
     } catch (error) {
       setError('An error occurred. Please try again.');

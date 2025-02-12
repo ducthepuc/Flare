@@ -47,7 +47,7 @@ function ProfilePage() {
                 const isOwn = meData.username === username;
                 setIsOwnProfile(isOwn);
 
-                const profileResponse = await fetch(`http://localhost:5000/api/profile/${encodeURIComponent(username)}`);
+                const profileResponse = await fetch(`http://localhost:5000/api/nameprofile/${encodeURIComponent(username)}`);
                 if (!profileResponse.ok) {
                     throw new Error(`Profile not found: ${profileResponse.status}`);
                 }

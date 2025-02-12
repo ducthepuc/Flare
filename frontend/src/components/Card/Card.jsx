@@ -12,10 +12,12 @@ const Card = ({ card, onClick }) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [stars, setStars] = useState(0);
     const [hasStarred, setHasStarred] = useState(false);
+    console.log(card)
 
     const courseId = card[0];
     const title = card[1];
-    const creator = card[2];
+    const creatorId = card[2]
+    const [creator, setCreator] = useState("Unknown");
     const tags = card[3] || [];
 
     useEffect(() => {
@@ -46,8 +48,9 @@ const Card = ({ card, onClick }) => {
                         
                         if (progressData?.currentStep !== undefined) {
                             const step = progressData.currentStep;
+                        
                             setCurrentStep(step);
-                            let calculatedProgress = ((step + 1) / courseData.elements.length) * 100;
+                            let calculatedProgress = ((step) / courseData.elements.length) * 100;
 
                             if (calculatedProgress < 100) {
                                 calculatedProgress = Math.min(calculatedProgress, 90);
@@ -89,10 +92,11 @@ const Card = ({ card, onClick }) => {
     useEffect(() => {
         const fetchCreatorProfile = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/profile/${encodeURIComponent(creator)}`);
+                const response = await fetch(`http://localhost:5000/api/profile/${encodeURIComponent(creatorId)}`);
                 if (response.ok) {
                     const data = await response.json();
                     setCreatorPfp(data.profilePicture || DefaultPfp);
+                    setCreator(data.username)
                 }
             } catch (error) {
                 console.error('Error fetching creator profile:', error);
@@ -120,7 +124,7 @@ const Card = ({ card, onClick }) => {
         try {
             const method = hasStarred ? 'DELETE' : 'POST';
             const response = await fetch(
-                `http://localhost:5000/api/course/${courseId}/star`,
+                `http://localhost:5000/api/course/${courseId}/stars`,
                 {
                     method,
                     headers: { 'Authorization': token }
@@ -227,7 +231,7 @@ const Card = ({ card, onClick }) => {
                     }} />
                 </div>
                 <p style={{ fontSize: '0.8em', color: 'black', marginBottom: '8px' }}>
-                    Progress: {Math.round(progress)}% ({currentStep + 1}/{totalSteps} steps)
+                    Progress: {Math.round(progress)}% ({currentStep}/{totalSteps} steps)
                 </p>
                 <div className="flex flex-wrap gap-1 mt-2">
                     {tags.map((tag, index) => (

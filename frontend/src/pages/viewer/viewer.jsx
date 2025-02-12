@@ -47,18 +47,23 @@ function Viewer() {
 
   useEffect(() => {
     const saveProgress = async () => {
+      console.log("Saving")
+      console.log(JSON.stringify({
+        currentStep: currentIndex,
+        totalSteps: courseData.elements.length
+      }))
       if (!courseData || !courseData.elements) return;
-
+  
       const token = localStorage.getItem('userToken');
       if (!token) return;
-
+  
       const progress = ((currentIndex + 1) / courseData.elements.length) * 100;
       
       try {
         const user = await fetch('http://localhost:5000/api/me', {
           headers: { 'Authorization': token }
         }).then(res => res.json());
-
+  
         await fetch(`http://localhost:5000/api/course_progress/${courseTitle}`, {
           method: 'POST',
           headers: {
@@ -75,7 +80,7 @@ function Viewer() {
         console.error('Failed to save progress:', error);
       }
     };
-
+    
     saveProgress();
   }, [currentIndex, courseData, courseTitle]);
 
@@ -83,11 +88,11 @@ function Viewer() {
     const fetchCourseData = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`/api/courses/${encodeURIComponent(courseTitle)}`);
+        const response = await fetch(`http://localhost:5000/api/courses/${encodeURIComponent(courseTitle)}`);
         const data = await response.json();
+        console.log(data);
 
         if (!response.ok) {
-          throw new Error(data.error || `HTTP error! status: ${response.status}`);
           throw new Error(data.error || `HTTP error! status: ${response.status}`);
         }
 
