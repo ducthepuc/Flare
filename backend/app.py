@@ -9,10 +9,10 @@ import token_system as ts
 from dbmanager import *
 import flask as f
 
-APP_PORT = 5000
 FRONTEND_PORT = 3000
+APP_PORT = 5000
 
-ORIGINS = [f"http://localhost:{FRONTEND_PORT}"]
+ORIGINS = ["http://localhost:{}".format(FRONTEND_PORT)]
 
 
 def is_port_in_use(port):
@@ -27,7 +27,8 @@ def is_port_in_use(port):
 app = f.Flask(__name__)
 
 CORS(app,
-     resources={r"/api/*": {
+     resources={
+         r"/api/*": {
          "origins": ["http://localhost:3000"],
          "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
          "allow_headers": ["Content-Type", "Authorization"],
@@ -48,12 +49,9 @@ def cleanup():
     print("Cleaning up database connections...")
     sql_pool.close()
     # Closing up the lighter key handling database
-    ts.DBHandler.instance.cursor.close()
+    ts.DBHandler.instance.get_cursor().close()
     ts.DBHandler.instance.db.close()
     print("Cleanup completed")
-
-# Register the cleanup function to be called on exit
-atexit.register(cleanup)
 
 @app.route('/debug/routes')
 def list_routes():
@@ -66,12 +64,13 @@ def list_routes():
         })
     return f.jsonify(routes)
 
-if __name__ == '__main__':
-    if is_port_in_use(APP_PORT):
-        print(f"Port {APP_PORT} is already in use. Please free up the port and try again.")
-        exit(1)
-
-    try:
-        app.run(debug=True, use_reloader=False, port=APP_PORT)
-    finally:
-        cleanup()
+try:
+    if __name__ == '__main__':
+        if is_port_in_use(APP_PORT):
+            print(f"Port {APP_PORT} is already in use. Please free up the port and try again.")
+            exit(1)
+        app.run(port=APP_PORT)
+except Exception as e:
+    print(f"An error occurred: {e}")
+finally:
+    cleanup()

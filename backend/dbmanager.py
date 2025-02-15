@@ -75,16 +75,14 @@ class DCData:
         ...
 
 def add_user(name: str, password, pw2, user_email, is_discord, discord_data: DCData):
-    """
-
-    """
-    if password != pw2:
-        raise OutputMessageError("Passwords do not match")
+    # ...
 
     c1 = pooled_query("INSERT INTO profile (username, description, streak) VALUES (%s, %s, %s)",
                  (name, "", 0,), True)
     profile_id = c1.lastrowid
 
+    print("Profile ID:", profile_id)
+    
     if is_discord:
         registration_id = 0
     else:
@@ -92,9 +90,10 @@ def add_user(name: str, password, pw2, user_email, is_discord, discord_data: DCD
             (user_email, sha256(password.encode('utf-8')).hexdigest(),), True)
         registration_id = c2.lastrowid
 
-
     token = generate_token()
+    print("token:", token)
     res, ntoken = encrypt_token(token)
+    print("ntoken:", ntoken)
 
     pooled_query("INSERT INTO user (isDiscord, profile_id, registration_id, token, hashed_token, username, joined, isAccountValid) VALUES "
         "(%s,%s,%s,%s,%s,%s,%s,%s)", (is_discord, profile_id, registration_id, ntoken, hash_token(token),
