@@ -99,10 +99,10 @@ const UserPanel = () => {
     const handleProfilePictureUpload = async (event) => {
         const file = event.target.files[0];
         if (!file) return;
-
+    
         const formData = new FormData();
         formData.append('pfp', file);
-
+    
         try {
             const user_token = localStorage.getItem("userToken");
             const response = await fetch('http://localhost:5000/api/change_pfp', {
@@ -112,14 +112,13 @@ const UserPanel = () => {
                 },
                 body: formData
             });
-
-            if (!response.ok) {
-                throw new Error('Failed to upload profile picture');
-            }
-
+    
             const result = await response.json();
-            setProfilePicture(result.profilePictureUrl || DefaultPfp);
-            setIsEditing(prev => ({ ...prev, profilePicture: false }));
+            if (result.result) {
+                setProfilePicture(result.profilePictureUrl || DefaultPfp);
+            } else {
+                alert('Failed to upload profile picture');
+            }
         } catch (error) {
             console.error("Error uploading profile picture:", error);
             alert('Failed to upload profile picture');

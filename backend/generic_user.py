@@ -96,7 +96,8 @@ def change_pfp():
     img.save(f'../cdn/images/{uid}.png')
 
     return {
-        "result": True
+        "result": True,
+        "profilePictureUrl": f"/cdn/images/{uid}.png"
     }
 
 @user_bp.route("/api/profile/<userid>")
