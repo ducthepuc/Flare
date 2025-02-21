@@ -174,16 +174,14 @@ function CourseCreator() {
         <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ position: 'absolute', top: '20px', left: '20px' }}>
                 <motion.button
-                    whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => navigate('/homepage')}
                     style={{
-                        padding: '8px 16px',
-                        backgroundColor: '#FF6B35',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
+                        backgroundImage: `radial-gradient(circle, rgba(235,88,2,1) 0%, rgba(255,132,0,1) 100%)`,
+                    }}
+                    whileHover={{
+                        scale: '1.1',
+                        backgroundImage: 'radial-gradient(circle, rgba(255,0,56,1) 0%, rgba(167,4,4,1) 100%)',
                     }}
                 >
                     Back to Homepage
@@ -258,14 +256,23 @@ function CourseCreator() {
                             borderRadius: '8px',
                             backgroundColor: '#333333',
                             color: 'white',
+                            width: '40vw'
+                        }}
+                        whileHover={{
+                            backgroundColor: '#444444',
                         }}
                     />
-                    <button
+                    <motion.button
                         onClick={handleAddTag}
-                        className="px-4 py-2 bg-green-500 text-white rounded-md"
+                        style={{
+                            backgroundImage: `radial-gradient(circle, rgba(235,88,2,1) 0%, rgba(255,132,0,1) 100%)`
+                        }}
+                        whileHover={{
+                            scale: '1.1'
+                        }}
                     >
                         Add Tag
-                    </button>
+                    </motion.button>
                 </div>
                 
                 <div className="flex flex-wrap gap-2 mb-4">
@@ -287,12 +294,17 @@ function CourseCreator() {
 
                 {steps.map((step, stepIndex) => (
                     <div key={stepIndex} className="border border-gray-300 m-2 p-4 rounded-md">
-                        <button
+                        <motion.button
                             onClick={() => removeStep(stepIndex)}
-                            className="float-right text-red-500 hover:text-red-700"
+                            style={{
+                                backgroundImage: `radial-gradient(circle, rgba(235,88,2,1) 0%, rgba(255,132,0,1) 100%)`
+                            }}
+                            whileHover={{
+                                scale: '1.1'
+                            }}
                         >
                             Delete Step
-                        </button>
+                        </motion.button>
 
                         {step.type === 'lesson' && (
                             <Lesson
@@ -329,12 +341,17 @@ function CourseCreator() {
                 ))}
 
                 <div className="relative inline-block">
-                    <button
+                    <motion.button
                         onClick={toggleDropdown}
-                        className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                        style={{
+                            backgroundImage: `radial-gradient(circle, rgba(235,88,2,1) 0%, rgba(255,132,0,1) 100%)`
+                        }}
+                        whileHover={{
+                            scale: '1.1'
+                        }}
                     >
                         Add Step
-                    </button>
+                    </motion.button>
                     {isDropdownOpen && (
                         <div className="absolute bg-gray-800 text-white shadow-lg z-10 w-48 rounded-md">
                             <div
@@ -360,12 +377,18 @@ function CourseCreator() {
                 </div>
 
                 <div className="mt-4 space-y-2">
-                    <button
+                    <motion.button
                         onClick={saveCourse}
-                        className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        style={{
+                            backgroundImage: `radial-gradient(circle, rgba(235,88,2,1) 0%, rgba(255,132,0,1) 100%)`,
+                        }}
+                        whileHover={{
+                            scale: '1.1',
+                            backgroundImage: 'radial-gradient(circle, rgba(0,255,94,1) 0%, rgba(40,167,4,1) 100%)'
+                        }}
                     >
                         Save Course
-                    </button>
+                    </motion.button>
                 </div>
             </div>
         </div>

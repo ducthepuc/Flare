@@ -202,7 +202,14 @@ function Viewer() {
     if (!element) return null;
     if (element.type === "lesson") {
       return (
-          <motion.div key={index} className="border border-gray-200 rounded-lg p-5 mb-5"
+          <motion.div key={index} style={{
+            margin: '10px auto',
+            borderRadius: '15px',
+            padding: '10px',
+            background: 'radial-gradient(circle, rgba(41,42,41,1) 0%, rgba(31,32,30,1) 100%)',
+            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+            maxWidth: '40vw',
+          }}
           >
             {element.content.map((content, idx) => {
               if (content.type === "text-block") {
@@ -237,9 +244,19 @@ function Viewer() {
     } else if (element.type === "question") {
       return (
           <div key={index} className="border border-gray-200 rounded-lg p-5 mb-5">
-            <p className="text-lg font-medium mb-4">{element.questionText}</p>
+            <p style={{margin: '10px auto',
+              borderRadius: '15px',
+              padding: '10px',
+              background: 'radial-gradient(circle, rgba(41,42,41,1) 0%, rgba(31,32,30,1) 100%)',
+              boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+              maxWidth: '60vw',}}>{element.questionText}</p>
             {element.answers.map((answer, ansIndex) => (
-                <div key={ansIndex} className="mb-3">
+                <div key={ansIndex} style={{margin: '10px auto',
+                  borderRadius: '15px',
+                  padding: '10px',
+                  background: 'radial-gradient(circle, rgba(41,42,41,1) 0%, rgba(31,32,30,1) 100%)',
+                  boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+                  maxWidth: '40vw',}}>
                   {element.questionType === "true-false" ? (
                       <Radio
                           name={`question-${index}`}
@@ -262,9 +279,22 @@ function Viewer() {
       );
     } else if (element.type === "code-task") {
       return (
-          <div key={index} className="border border-gray-200 rounded-lg p-5 mb-5">
+          <div key={index} style={{
+            margin: '10px auto',
+            borderRadius: '15px',
+            padding: '10px',
+            background: 'radial-gradient(circle, rgba(41,42,41,1) 0%, rgba(31,32,30,1) 100%)',
+            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+            maxWidth: '60vw',
+          }}>
               <div className="flex justify-between items-start mb-4">
-                  <p className="text-lg font-medium">
+                  <p style={{
+                    margin: '10px auto',
+                    borderRadius: '15px',
+                    padding: '10px',
+                    background: 'radial-gradient(circle, rgba(41,42,41,1) 0%, rgba(31,32,30,1) 100%)',
+                    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+                    maxWidth: '40vw',}}>
                       {element.task.split('**').map((part, i) => 
                           i % 2 === 0 ? 
                               <span key={i}>{part}</span> : 
@@ -274,45 +304,29 @@ function Viewer() {
                   {element.help && (
                       <button
                           onClick={() => setShowHelp(!showHelp)}
-                          className="ml-2 p-2 text-gray-500 hover:text-gray-700"
+                          style={{boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+                            backgroundImage: `radial-gradient(circle, rgba(235,88,2,1) 0%, rgba(255,132,0,1) 100%)`,
+                            color: '#000000',
+                            maxWidth: '40vw',
+                            margin: '10px auto',
+                            borderRadius: '5px',
+                            padding: '5px',
+                          fontSize: '24px',}}
                           title={showHelp ? "Hide help" : "Show help"}
-                      >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
+                      > Help!
                       </button>
                   )}
               </div>
 
               {showHelp && element.help && (
                   <div className="mb-4 p-4 bg-blue-100 text-blue-800 rounded-lg">
-                      <p className="text-sm">{element.help}</p>
-                  </div>
-              )}
-              <div className="flex justify-between items-start mb-4">
-                  <p className="text-lg font-medium">
-                      {element.task.split('**').map((part, i) => 
-                          i % 2 === 0 ? 
-                              <span key={i}>{part}</span> : 
-                              <span key={i} className="bg-yellow-200 text-black px-1 rounded">{part}</span>
-                      )}
-                  </p>
-                  {element.help && (
-                      <button
-                          onClick={() => setShowHelp(!showHelp)}
-                          className="ml-2 p-2 text-gray-500 hover:text-gray-700"
-                          title={showHelp ? "Hide help" : "Show help"}
-                      >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                      </button>
-                  )}
-              </div>
-
-              {showHelp && element.help && (
-                  <div className="mb-4 p-4 bg-blue-100 text-blue-800 rounded-lg">
-                      <p className="text-sm">{element.help}</p>
+                      <p style={{
+                        margin: '10px auto',
+                        borderRadius: '15px',
+                        padding: '10px',
+                        background: 'radial-gradient(circle, rgba(41,42,41,1) 0%, rgba(31,32,30,1) 100%)',
+                        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+                        maxWidth: '40vw',}}>{element.help}</p>
                   </div>
               )}
 
@@ -354,12 +368,15 @@ function Viewer() {
                 />
               </div>
 
-              <button
+              <motion.button
                   onClick={() => checkCodeTaskAnswer(index)}
-                  className="w-full px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 mt-2"
+                  style={{
+                    backgroundImage: `radial-gradient(circle, rgba(235,88,2,1) 0%, rgba(255,132,0,1) 100%)`,
+                  }}
+                  whileHover={{scale: 1.1}}
               >
                 Check Solution
-              </button>
+              </motion.button>
 
               {codeTaskResults[index] && (
                   <div
@@ -414,38 +431,66 @@ function Viewer() {
         {renderElement(courseData.elements[currentIndex], currentIndex)}
 
         <div className="flex justify-between items-center mt-8">
-          <button
+          <motion.button
               onClick={handleBack}
               disabled={currentIndex === 0}
-              className="px-6 py-2 bg-gray-500 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                backgroundImage: `radial-gradient(circle, rgba(235,88,2,1) 0%, rgba(255,132,0,1) 100%)`
+              }}
+              whileHover={{
+                scale: '1.1'
+              }}
           >
             Back
-          </button>
-          <button
+          </motion.button>
+          <motion.button
               onClick={handleNext}
               disabled={currentIndex === courseData.elements.length - 1}
-              className="px-6 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                backgroundImage: `radial-gradient(circle, rgba(235,88,2,1) 0%, rgba(255,132,0,1) 100%)`,
+              }}
+              whileHover={{scale: 1.1}}
           >
             Continue
-          </button>
+          </motion.button>
         </div>
 
         <div className="mt-8">
-          <button
+          <motion.button
               onClick={calculateScore}
-              className="w-full px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+              style={{
+                backgroundImage: `radial-gradient(circle, rgba(235,88,2,1) 0%, rgba(255,132,0,1) 100%)`,
+              }}
+              whileHover={{
+                scale: '1.1',
+                backgroundImage: 'radial-gradient(circle, rgba(0,255,94,1) 0%, rgba(40,167,4,1) 100%)'
+              }}
           >
             Submit Quiz
-          </button>
-          <p className="text-center mt-4">
+          </motion.button>
+          <p style={{
+            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+            backgroundImage: 'radial-gradient(circle, rgba(0,255,94,1) 0%, rgba(40,167,4,1) 100%)',
+            color: '#000000',
+            maxWidth: '40vw',
+            margin: '10px auto',
+            borderRadius: '15px',
+            padding: '5px'
+          }}>
             Your score: {score} / {scorableElements}
           </p>
-          <button
+          <motion.button
               onClick={() => navigate('/homepage')}
-              className="w-full px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 mt-4"
+              style={{
+                backgroundImage: `radial-gradient(circle, rgba(235,88,2,1) 0%, rgba(255,132,0,1) 100%)`,
+              }}
+              whileHover={{
+                scale: '1.1',
+                backgroundImage: 'radial-gradient(circle, rgba(255,0,56,1) 0%, rgba(167,4,4,1) 100%)',
+              }}
           >
             Back to homepage
-          </button>
+          </motion.button>
         </div>
       </div>
   );

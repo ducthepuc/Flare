@@ -56,21 +56,25 @@ export function Lesson({ step, stepIndex, steps, setSteps }) {
                         }}
                     />
                     {step.content.length > 1 && (
-                        <button
+                        <motion.button
                             onClick={() => removeContentBlock(contentIndex)}
-                            className="absolute top-0 right-0 text-red-500 hover:text-red-700"
+                            style={{ padding: '10px 20px', cursor: 'pointer', backgroundImage: 'radial-gradient(circle, rgba(255,0,56,1) 0%, rgba(167,4,4,1) 100%)', color:'white' }}
+                            whileHover={{scale: 1.1}}
                         >
                             X
-                        </button>
+                        </motion.button>
                     )}
                 </div>
             ))}
-            <button
+            <motion.button
                 onClick={addContentBlock}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                style={{ padding: '10px 20px', cursor: 'pointer', background: 'radial-gradient(circle, rgba(10,96,214,1) 0%, rgba(0,14,255,1) 100%)', color:'white' }}
+                whileHover={{
+                    scale: '1.1'
+                }}
             >
                 Add Text Block
-            </button>
+            </motion.button>
         </div>
     );
 }

@@ -36,18 +36,27 @@ export function AnswerOption({
                     border: '1px solid #FF7F4F',
                 }}
             />
-            <input
+            <motion.input
                 type={questionType === 'true-false' ? 'radio' : 'checkbox'}
                 checked={answer.correct}
                 onChange={onCorrectChange}
-                className="mr-2"
+                style={{
+                    accentColor: '#333333',
+                    width: '2vw',
+                    height: '2vh',
+                    borderRadius: '5px',
+                    backgroundColor: '#2196F3',
+                    transition: 'opacity 0.2s ease'
+                }}
+                whileHover={{ scale: 1.1 }}
             />
-            <button
+            <motion.button
                 onClick={onRemove}
-                className="text-red-500 hover:text-red-700"
+                style={{ padding: '10px 20px', cursor: 'pointer', backgroundImage: 'radial-gradient(circle, rgba(255,0,56,1) 0%, rgba(167,4,4,1) 100%)', color:'white' }}
+                whileHover={{scale: 1.1}}
             >
                 X
-            </button>
+            </motion.button>
         </div>
     );
 }

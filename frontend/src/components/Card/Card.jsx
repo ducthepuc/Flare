@@ -159,8 +159,8 @@ const Card = ({ card, onClick }) => {
 
     return (
         <motion.div 
-            style={{ 
-                backgroundColor: '#FF6B35', 
+            style={{
+                backgroundImage: `radial-gradient(circle, rgba(235,88,2,1) 0%, rgba(255,132,0,1) 100%)`,
                 borderRadius: '8px', 
                 boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', 
                 cursor: 'pointer',

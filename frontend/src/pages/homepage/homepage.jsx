@@ -287,21 +287,33 @@ const HomePage = () => {
     }, [navigate]);
 
     return (
-        <div style={{ padding: '20px' }}>
+        <div style={{
+            margin: '10px auto',
+            borderRadius: '15px',
+            padding: '10px',
+            background: 'radial-gradient(circle, rgba(41,42,41,1) 0%, rgba(31,32,30,1) 100%)',
+            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+            maxWidth: '95vw',}}>
             <header style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <div>
+                <div style={{
+                    margin: '10px auto',
+                    borderRadius: '15px',
+                    padding: '10px',
+                    background: 'radial-gradient(circle, #4d4b49 0%, rgba(31,32,30,1) 100%)',
+                    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+                    width: '60vw',}}>
                     <h3>Welcome, {username || 'Guest'}</h3>
                     <div>
                         <img
                             src={profilePicture}
                             alt="Profile"
-                            style={{ width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer' }}
+                            style={{ width: '80px', height: '80px', borderRadius: '50%', cursor: 'pointer' }}
                             onClick={() => navigate('/panel')}
                         />
                         <br />
                         <button
                             onClick={logout}
-                            style={{ marginLeft: '10px', padding: '5px 10px', cursor: 'pointer' }}
+                            style={{ marginLeft: '10px', padding: '5px 10px', cursor: 'pointer', backgroundImage: `radial-gradient(circle, rgba(235,88,2,1) 0%, rgba(255,132,0,1) 100%)` }}
                         >
                             Logout
                         </button>
@@ -315,7 +327,8 @@ const HomePage = () => {
                     display: 'flex',
                     flexWrap: 'wrap',
                     gap: '10px',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    borderRadius: '10px'
                 }}>
                     {popularTags.map((tag) => (
                         <motion.button
@@ -331,7 +344,8 @@ const HomePage = () => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '8px',
-                                fontSize: '1rem'
+                                fontSize: '1rem',
+                                backgroundImage: 'radial-gradient(circle, rgba(255,0,56,1) 0%, rgba(167,4,4,1) 100%)',
                             }}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
@@ -367,7 +381,7 @@ const HomePage = () => {
                                 alignItems: 'center',
                                 minWidth: '120px',
                                 padding: '10px',
-                                backgroundColor: '#FF6B35',
+                                backgroundImage: `radial-gradient(circle, rgba(235,88,2,1) 0%, rgba(255,132,0,1) 100%)`,
                                 borderRadius: '8px',
                                 cursor: 'pointer'
                             }}
@@ -417,7 +431,8 @@ const HomePage = () => {
                     placeholder="Search courses and users..."
                     value={searchInput}
                     onChange={handleSearch}
-                    style={{ color: 'rgb(240, 240, 240)', backgroundColor: '#333333',padding: '10px', width: '100%', maxWidth: '600px', margin: '0 auto', display: 'block', border: '1px solid #555' }}
+                    style={{ color: 'rgb(240, 240, 240)', backgroundImage: 'linear-gradient(90deg, rgba(42,37,34,1) 0%, rgba(89,89,88,1) 100%)'
+                        ,padding: '10px', width: '100%', maxWidth: '600px', margin: '0 auto', display: 'block', border: '1px solid #555' }}
                     whileHover={{ scale: 1.05, border: '1px solid #FF7F4F' }}
                 />
             </div>
@@ -427,7 +442,7 @@ const HomePage = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => navigate('/creator')}
-                    style={{ padding: '10px 20px', cursor: 'pointer' }}
+                    style={{ padding: '10px 20px', cursor: 'pointer', background: 'radial-gradient(circle, rgba(10,96,214,1) 0%, rgba(0,14,255,1) 100%)', color:'white' }}
                 >
                     Create Course
                 </motion.button>

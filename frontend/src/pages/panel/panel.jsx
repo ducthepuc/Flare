@@ -153,9 +153,8 @@ const UserPanel = () => {
             flexDirection: 'column',
             alignItems: 'center',
             padding: '40px',
-            backgroundColor: '#f9fafb',
             minHeight: '100vh',
-            fontFamily: 'Arial, sans-serif'
+            fontFamily: 'Arial, sans-serif',
         }}>
             {/* Profile Picture Section */}
             <div style={{
@@ -163,10 +162,10 @@ const UserPanel = () => {
                 flexDirection: 'column',
                 alignItems: 'center',
                 padding: '20px',
-                border: '1px solid #ddd',
+                border: '1px solid #FF6B35',
                 borderRadius: '10px',
                 boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-                backgroundColor: '#ffffff',
+                backgroundImage: `radial-gradient(circle, rgba(235,88,2,1) 0%, rgba(255,132,0,1) 100%)`,
                 marginBottom: '20px',
                 width: '100%',
                 maxWidth: '400px'
@@ -201,12 +200,12 @@ const UserPanel = () => {
                             padding: '8px 16px',
                             borderRadius: '6px',
                             border: 'none',
-                            backgroundColor: '#3b82f6',
+                            backgroundColor: '#1a1a1a',
                             color: '#ffffff',
                             cursor: 'pointer',
                             transition: 'background-color 0.2s ease',
                             ':hover': {
-                                backgroundColor: '#2563eb'
+                                backgroundColor: '#575b63',
                             }
                         }}
                     >
@@ -221,10 +220,10 @@ const UserPanel = () => {
                 flexDirection: 'row',
                 alignItems: 'center',
                 padding: '20px',
-                border: '1px solid #ddd',
+                border: '1px solid #1a1a1a',
                 borderRadius: '10px',
                 boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-                backgroundColor: '#ffffff',
+                backgroundImage: 'linear-gradient(90deg, rgba(42,37,34,1) 0%, rgba(89,89,88,1) 100%)',
                 marginBottom: '20px',
                 width: '100%',
                 maxWidth: '400px'
@@ -236,8 +235,8 @@ const UserPanel = () => {
                     marginLeft: '10px'
                 }}>
                     <FaStar color="#FFD700" size={18} />
-                    <span style={{ color: '#000000', fontWeight: 'bold', fontSize: '18px' }}>
-                        {formatStarCount(totalStars)}
+                    <span style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '18px' }}>
+                        Stars: {formatStarCount(totalStars)}
                     </span>
                 </div>
             </div>
@@ -248,10 +247,10 @@ const UserPanel = () => {
                 flexDirection: 'column',
                 alignItems: 'center',
                 padding: '20px',
-                border: '1px solid #ddd',
+                border: '1px solid #FF6B35',
                 borderRadius: '10px',
                 boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-                backgroundColor: '#ffffff',
+                backgroundImage: `radial-gradient(circle, rgba(235,88,2,1) 0%, rgba(255,132,0,1) 100%)`,
                 marginBottom: '20px',
                 width: '100%',
                 maxWidth: '400px'
@@ -281,7 +280,7 @@ const UserPanel = () => {
                             borderRadius: '6px',
                             border: 'none',
                             backgroundColor: '#10b981',
-                            color: '#ffffff',
+                            color: '#1a1a1a',
                             cursor: 'pointer',
                             transition: 'background-color 0.2s ease',
                             ':hover': {
@@ -298,12 +297,12 @@ const UserPanel = () => {
                             padding: '8px 16px',
                             borderRadius: '6px',
                             border: 'none',
-                            backgroundColor: '#3b82f6',
+                            backgroundColor: '#1a1a1a',
                             color: '#ffffff',
                             cursor: 'pointer',
                             transition: 'background-color 0.2s ease',
                             ':hover': {
-                                backgroundColor: '#2563eb'
+                                backgroundColor: '#575b63'
                             }
                         }}
                     >
@@ -318,14 +317,14 @@ const UserPanel = () => {
                 flexDirection: 'column',
                 alignItems: 'center',
                 padding: '20px',
-                border: '1px solid #ddd',
+                border: '1px solid #1a1a1a',
                 borderRadius: '10px',
                 boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-                backgroundColor: '#ffffff',
+                backgroundImage: 'radial-gradient(circle, rgba(42,37,34,1) 70%, rgba(48,48,48,1) 100%)',
                 width: '100%',
                 maxWidth: '800px'
             }}>
-                <h2 style={{ margin: '0', fontSize: '24px', color: '#000000', marginBottom: '20px' }}>Courses</h2>
+                <h2 style={{ margin: '0', fontSize: '24px', color: '#ffffff', marginBottom: '20px' }}>Courses</h2>
                 <div style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
