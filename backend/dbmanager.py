@@ -74,31 +74,30 @@ class DCData:
     def __init__(self):
         ...
 
-def add_user(name: str, password, pw2, user_email, is_discord, discord_data: DCData):
-    """
-
-    """
-    if password != pw2:
-        raise OutputMessageError("Passwords do not match")
+def add_user(name: str, password, pw2, user_email, is_discord, discord_data: DCData, role: str):
+    # ...
 
     c1 = pooled_query("INSERT INTO profile (username, description, streak) VALUES (%s, %s, %s)",
                  (name, "", 0,), True)
     profile_id = c1.lastrowid
 
-    if is_discord:
-        registration_id = 0
-    else:
+    print("Profile ID:", profile_id)
+    
+    if not is_discord:
         c2 = pooled_query("INSERT INTO classical_registration (email, password) VALUES (%s, %s)",
             (user_email, sha256(password.encode('utf-8')).hexdigest(),), True)
         registration_id = c2.lastrowid
-
+    else:
+        registration_id = 0
 
     token = generate_token()
+    print("token:", token)
     res, ntoken = encrypt_token(token)
+    print("ntoken:", ntoken)
 
-    pooled_query("INSERT INTO user (isDiscord, profile_id, registration_id, token, hashed_token, username, joined, isAccountValid) VALUES "
-        "(%s,%s,%s,%s,%s,%s,%s,%s)", (is_discord, profile_id, registration_id, ntoken, hash_token(token),
-                                      name, datetime.now(), 1),
+    pooled_query("INSERT INTO user (isDiscord, profile_id, registration_id, token, hashed_token, username, joined, isAccountValid, role) VALUES "
+        "(%s,%s,%s,%s,%s,%s,%s,%s,%s)", (is_discord, profile_id, registration_id, ntoken, hash_token(token),
+                                      name, datetime.now(), 1, role),
                  do_commit=True)
 
 

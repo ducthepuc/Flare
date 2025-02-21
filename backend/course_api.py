@@ -29,7 +29,6 @@ def upload_course():
         dbm.create_course(usr[0], title, desc, tags, elements)
         return jsonify({"result": True, "response": "Course uploaded successfully!"}), 201
     except Exception as e:
-        raise
         return jsonify({"result": False, "response": f"Error: {str(e)}"}), 500
 
 
@@ -40,7 +39,6 @@ def popular_tags():
         value = [{"name": tag, "count": count} for tag, count in tags]
         return jsonify({"tags": value}), 200
     except Exception as e:
-        raise
         return jsonify({"result": False, "response": f"Error: {str(e)}"}), 500
 
 
@@ -51,7 +49,6 @@ def popular_tags_limit(limit):
         value = [{"name": tag, "count": count} for tag, count in tags]
         return jsonify({"tags": value}), 200
     except Exception as e:
-        raise
         return jsonify({"result": False, "response": f"Error: {str(e)}"}), 500
 
 
@@ -67,7 +64,6 @@ def get_course_objects():
         } for c in courses]
         return jsonify({"response": True, "result": courses_list}), 200
     except Exception as e:
-        raise
         return jsonify({"response": False, "error": f"Error: {str(e)}"}), 500
 
 
@@ -79,7 +75,6 @@ def get_course(course_id):
             return jsonify({"result": False, "response": "Course not found"}), 404
         return jsonify({"creator": course[1], "elements": json.loads(course[5])}), 200
     except Exception as e:
-        raise
         return jsonify({"response": False, "error": f"Error: {str(e)}"}), 500
 
 
@@ -104,7 +99,6 @@ def course_progress(course_id):
                 dbm.set_course_progress(auth, course_id, request.json.get("currentStep", 0))
             return jsonify({"result": True, "response": "Progress updated successfully"}), 200
     except Exception as e:
-        raise
         return jsonify({"response": False, "error": f"Error: {str(e)}"}), 500
 
 @course_bp.route('/api/course/<course_id>/stars', methods=['OPTIONS'])
@@ -128,7 +122,7 @@ def stars(course_id):
         elif request.method == "POST":
             course = dbm.get_course_by(course_id)
             if not course:
-                return {"result": False, "response": "Course not found"}, 500
+                return {"result": False, "response": "Course not found"}, 404
 
             r = dbm.add_course_star(auth,course_id)
             if not r:
@@ -137,7 +131,7 @@ def stars(course_id):
         elif request.method == "DELETE":
             course = dbm.get_course_by(course_id)
             if not course:
-                return {"result": False, "response": "Course not found"}, 500
+                return {"result": False, "response": "Course not found"}, 404
 
             r = dbm.remove_course_star(auth, course_id)
             if not r:
@@ -145,5 +139,4 @@ def stars(course_id):
 
             return {"result": True, "response": "Star removed"}
     except Exception as e:
-        raise
         return jsonify({"response": False, "error": f"Error: {str(e)}"}), 500

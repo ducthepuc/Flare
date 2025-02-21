@@ -8,7 +8,8 @@ function RegisterPage() {
     name: '',
     email: '',
     password: '',
-    confirm_password: ''
+    confirm_password: '',
+    role: 'basic'
   });
   const [error, setError] = useState('');
 
@@ -140,6 +141,32 @@ function RegisterPage() {
             onChange={handleChange}
             required
           />
+
+          <label style={{ fontWeight: 'bold' }}>Role:</label>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <div>
+              <input
+                type="radio"
+                id="basic"
+                name="role"
+                value="basic"
+                checked={formData.role === 'basic'}
+                onChange={handleChange}
+              />
+              <label style={{ marginLeft: '5px' }}>Student</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="pro"
+                name="role"
+                value="pro"
+                checked={formData.role === 'pro'}
+                onChange={handleChange}
+              />
+              <label style={{ marginLeft: '5px' }}>Teacher</label>
+            </div>
+          </div>
           
           <motion.button
             type="submit"
